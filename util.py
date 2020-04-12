@@ -37,6 +37,7 @@ class FieldHandler(object):
         self.build_standard_scaler()
         self.field_nums = len(self.category_columns + self.continuation_columns)
 
+    # if data has this three feas, the dic is {'Fare': 5, 'Pclass': {1: 3, 2: 4, 3: 2}, 'Sex': {'female': 1, 'male': 0}}
     def build_filed_dict(self):
         for column in self.df.columns:
             if column in self.category_columns:
@@ -77,7 +78,7 @@ def transformation_data(file_path:str, field_hander:FieldHandler, label=None):
     df_v = df_v[field_hander.category_columns + field_hander.continuation_columns]
     df_v[field_hander.category_columns].fillna("-1", inplace=True)
     df_v[field_hander.continuation_columns].fillna(-999, inplace=True)
-    if field_hander.standard_scaler:
+    if field_hander.standard_scaler:  # to biaozhunhua conntinues feature,after that, mean is 0, std is 1, max is 9.6, min is -0.6
         df_v[field_hander.continuation_columns] = field_hander.standard_scaler.transform(df_v[field_hander.continuation_columns].values)
 
     df_i = df_v.copy()
@@ -89,8 +90,8 @@ def transformation_data(file_path:str, field_hander:FieldHandler, label=None):
         else:
             df_i[column] = field_hander.field_dict[column]
     
-    df_v = df_v.values.astype("float32")
-    df_i = df_i.values.astype("int32")
+    df_v = df_v.values.astype("float32")  # df_v is real value while category cols val is always 1
+    df_i = df_i.values.astype("int32")  # df_i is index while continue cols val has same index in same columns
 
     features = {
         "df_i": df_i,
